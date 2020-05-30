@@ -25,4 +25,63 @@ It is possible to use both a query language or directly API functions. The query
 The database built in conditions include string or numeric comparisons such as the operators =, !=, >, <, >=, <=.
 It is possible to write extensions and create more desiarble conditions (string manipulation, math etc) and attach them to a query directly throught the API.
 ## Operations
-## Errors
+#### Create
+```
+table_name: create {column1, column2...} {data_type1....}
+
+flights: create {plane, passangers, destination, time} {str, int, str, str}
+```
+plane | passangers | destination | time
+------------ | ------------- |------------ | -------------
+#### Insert
+```
+table_name: insert {column1=value1 column2=value2...}
+```
+```
+flights: insert {plane='Airbus 380', passangers=170, destination='Los Angeles', time='0700'}
+flights: insert {plane='Boeing 787', passangers=240, destination='Miami', time='1325'}
+flights: insert {plane='Boeing 767', passangers=216, destination='New York', time='2245'}
+flights: insert {plane='Airbus 320', passangers=164, destination='Dalas', time='0109'}
+```
+plane | passangers | destination | time
+------------ | ------------- |------------ | -------------
+Airbus 380 | 170 | Los Angeles | 0700
+Boeing 787 | 240 | Miami | 1325
+Boeing 767 | 216 | New York | 2245
+Airbus 320 | 164 | Dalas | 0109
+#### Update
+```
+table_name: update {column1=new_value1, column2=new_value2...} {condition1 & (condition2 | condition3)}
+```
+```
+flights: update {destination='Chicago', time='0030'} {passangers >= 210 & passangers < 240}
+```
+plane | passangers | destination | time
+------------ | ------------- |------------ | -------------
+Airbus 380 | 170 | Los Angeles | 0700
+Boeing 787 | 240 | Miami | 1325
+Boeing 767 | 216 | Chicago | 0030
+Airbus 320 | 164 | Dalas | 0109
+#### Delete
+```
+table_name: delete {condition}
+```
+```
+flights: delete {passangers = 240 | (destination='Dalas' | (time <'0100' & time >'0000')}
+```
+plane | passangers | destination | time
+------------ | ------------- |------------ | -------------
+Airbus 380 | 170 | Los Angeles | 0700
+Boeing 787 | 240 | Miami | 1325
+#### Select
+#### Other
+Delete entire table.
+```
+table_name: drop
+```
+Save table to disk.
+```
+table_name: save
+```
+#### Errors
+
