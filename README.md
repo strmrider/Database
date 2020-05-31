@@ -1,11 +1,11 @@
 # Database
-Custom dynamic, mutable, in-memory relational database with its own DSL query language.
+Custom, dynamic and mutable in-memory relational database with its own query language.
 
 # Features
 * Multi-table.
-* Mutable database. support insertion, update, deletion and selection of table and records.
-* Cache for last queries.
-* Support write/read from disk and backup.
+* Mutable database. supports insertion, update, deletion and selection of table and records.
+* Cache storage for recent queries.
+* Supports write/read from disk and backup.
 * Custom-made query language.
 * Direct API usage.
 
@@ -24,6 +24,7 @@ It is possible to use both a query language or directly API functions. The query
 ## Conditions
 The database built in conditions include string or numeric comparisons such as the operators =, !=, >, <, >=, <=.
 It is possible to write extensions and create more desiarble conditions (string manipulation, math etc) and attach them to a query directly throught the API.
+## Setup
 ## Operations
 ### Create
 ```
@@ -104,19 +105,36 @@ Airbus 380 | 170 | Los Angeles | 0700
 Boeing 787 | 240 | Miami | 1325
 Boeing 767 | 216 | Chicago | 0030
 Airbus 320 | 164 | Dallas | 0109
-#### Delete
+### Delete
 ```
 table_name: delete {condition}
 ```
 ```
-flights: delete {passangers = 240 | (destination='Dallas' | (time <'0100' & time >'0000')}
+flights: delete {passangers = 240 | (destination='Dallas' | (time <'0100' & time >'0000'))}
+```
+```cpp
+shared_ptr<DeletionQuery> deletion = 
+	shared_ptr<DeletionQuery>(new DeletionQuery("flights", conditions));
+res = database.query(deletion);
 ```
 plane | passangers | destination | time
 ------------ | ------------- |------------ | -------------
 Airbus 380 | 170 | Los Angeles | 0700
-Boeing 787 | 240 | Miami | 1325
-#### Select
-#### Other
+### Select
+```
+table_name: select {column1, column2...} {conditions}
+```
+```
+flights: select {*} {*}
+* - means all columns or no conditions
+```
+```cpp
+conditions = shared_ptr<ConditionsPack>(new ConditionsPack());
+shared_ptr<SelectQuery> select = 
+	shared_ptr<SelectQuery>(new SelectQuery("flights", conditions));
+res = database.query(select);
+```
+### Other
 Delete entire table.
 ```
 table_name: drop
@@ -125,5 +143,5 @@ Save table to disk.
 ```
 table_name: save
 ```
-#### Errors
+### Errors
 
