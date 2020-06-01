@@ -28,6 +28,7 @@ It is possible to write extensions and create more desiarble conditions (string 
 Include database library:
 ```cpp
 #include "dblib.h"
+using namespace database;
 ```
 Insert databsae file path:
 ```cpp
@@ -43,6 +44,11 @@ When the use of database is no longer needed, clear it from memory;
 ```cpp
 database.clear();
 ```
+To use the query language
+```cpp
+Parser parser;
+std::shared_ptr<Query> query = parser.parser([query as String]);
+```
 ## Operations
 ### Create
 ```
@@ -52,13 +58,13 @@ table_name: create {column1, column2...} {data_type1....}
 flights: create {plane, passangers, destination, time} {str, int, str, str}
 ```
 ```Cpp
-shared_ptr<CreateTableQuery> createTable = 
-shared_ptr<CreateTableQuery>(new CreateTableQuery("flights"));
+std::shared_ptr<CreateTableQuery> createTable = 
+std::shared_ptr<CreateTableQuery>(new CreateTableQuery("flights"));
 createTable->addColumn("plane", STRING);
 createTable->addColumn("passangers", INT);
 createTable->addColumn("destination", STRING);
 createTable->addColumn("time", STRING);
-shared_ptr<QueryResult> res = database.query(createTable);
+std::shared_ptr<QueryResult> result = database.query(createTable);
 ```
 plane | passangers | destination | time
 ------------ | ------------- |------------ | -------------
@@ -70,13 +76,13 @@ table_name: insert {column1=value1 column2=value2...}
 flights: insert {plane='Airbus 380', passangers=170, destination='Los Angeles', time='0700'}
 ```
 ```cpp
-shared_ptr<InsertionQuery> creationQuery = 
-  shared_ptr<InsertionQuery>(new InsertionQuery("flights"));
+std::shared_ptr<InsertionQuery> creationQuery = 
+  std::shared_ptr<InsertionQuery>(new InsertionQuery("flights"));
 creationQuery->addField("plane", "Airbus 380");
 creationQuery->addField("passangers", "170");
 creationQuery->addField("destination", "Los Angeles");
 creationQuery->addField("time", "0700");
-res = database.query(creationQuery);
+result = database.query(creationQuery);
 ```
 ```
 flights: insert {plane='Boeing 787', passangers=240, destination='Miami', time='1325'}
@@ -98,10 +104,10 @@ flights: update {destination='Chicago', time='0030'} {passangers >= 210 & passan
 ```
 ```cpp
 // create conditions
-shared_ptr<ComparisonCondition> con = 
-shared_ptr<ComparisonCondition>(new ComparisonCondition("passangers", "210", GREATER_EQUAL));
-shared_ptr<ComparisonCondition> con2 = 
-shared_ptr<ComparisonCondition>(new ComparisonCondition("passangers", "240", LESSER));
+std::shared_ptr<ComparisonCondition> con = 
+std::shared_ptr<ComparisonCondition>(new ComparisonCondition("passangers", "210", GREATER_EQUAL));
+std::shared_ptr<ComparisonCondition> con2 = 
+std::shared_ptr<ComparisonCondition>(new ComparisonCondition("passangers", "240", LESSER));
 
 // create conditions query
 ConditionsQuery query;
@@ -109,13 +115,13 @@ query.condition(con);
 query.setOperator(AND);
 query.condition(con2);
 query.done();
-shared_ptr<ConditionsPack> conditions = query.get();
+std::shared_ptr<ConditionsPack> conditions = query.get();
 
 // update query
-shared_ptr<UpdateQuery> update = shared_ptr<UpdateQuery>(new UpdateQuery("flights", conditions));
+std::shared_ptr<UpdateQuery> update = std::shared_ptr<UpdateQuery>(new UpdateQuery("flights", conditions));
 update->addField("destination", "Chicago");
 update->addField("time", "0030");
-res = database.query(update);
+result = database.query(update);
 ````
 plane | passangers | destination | time
 ------------ | ------------- |------------ | -------------
@@ -131,9 +137,9 @@ table_name: delete {condition}
 flights: delete {passangers = 240 | (destination='Dallas' | (time <'0100' & time >'0000'))}
 ```
 ```cpp
-shared_ptr<DeletionQuery> deletion = 
-	shared_ptr<DeletionQuery>(new DeletionQuery("flights", conditions));
-res = database.query(deletion);
+std::shared_ptr<DeletionQuery> deletion = 
+	sstd::hared_ptr<DeletionQuery>(new DeletionQuery("flights", conditions));
+result = database.query(deletion);
 ```
 plane | passangers | destination | time
 ------------ | ------------- |------------ | -------------
@@ -148,14 +154,14 @@ flights: select {*} {*}
 ```
 ```cpp
 conditions = shared_ptr<ConditionsPack>(new ConditionsPack());
-shared_ptr<SelectQuery> select = 
-	shared_ptr<SelectQuery>(new SelectQuery("flights", conditions));
-res = database.query(select);
+std::shared_ptr<SelectQuery> select = 
+	std::shared_ptr<SelectQuery>(new SelectQuery("flights", conditions));
+resut = database.query(select);
 ```
 Fetch the results:
 ```cpp
-shared_ptr<Selections> selections = res->getSelections();
-shared_ptr<vector<string>> row;
+std::shared_ptr<Selections> selections = result->getSelections();
+std::shared_ptr<std::vector<std::string>> row;
 for (int i = 0; i < selections->size(); i++)
 {
 	row = (*selections)[0];
@@ -178,7 +184,7 @@ If an error is detected, the database will not execute the query and include an 
 flights: insert {plane='Airbus 380', passangers=1as5, destination='Los Angeles', time='0700'}
 ```
 ```cpp
-shared_ptr<QueryResult> result = database.query([Query]);
+std::shared_ptr<QueryResult> result = database.query([Query]);
 if (result->isError())
 	cout << res->getError().getMessage();
 ```
