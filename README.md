@@ -134,6 +134,17 @@ shared_ptr<SelectQuery> select =
 	shared_ptr<SelectQuery>(new SelectQuery("flights", conditions));
 res = database.query(select);
 ```
+Fetch the results:
+```cpp
+shared_ptr<Selections> selections = res->getSelections();
+shared_ptr<vector<string>> row;
+for (int i = 0; i < selections->size(); i++)
+{
+	row = (*selections)[0];
+	for (string str : *row)
+		cout << str << endl;
+}
+```
 ### Other
 Delete entire table.
 ```
