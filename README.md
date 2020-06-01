@@ -25,6 +25,24 @@ It is possible to use both a query language or directly API functions. The query
 The database built in conditions include string or numeric comparisons such as the operators =, !=, >, <, >=, <=.
 It is possible to write extensions and create more desiarble conditions (string manipulation, math etc) and attach them to a query directly throught the API.
 ## Setup
+Include database library:
+```cpp
+#include "dblib.h"
+```
+Insert databsae file path:
+```cpp
+Database database([path]);
+```
+If file path isn't provided databse would be volatile.
+
+In case file exists, load databse into main memory:
+```cpp
+database.load();
+```
+When the use of database is no longer needed, clear it from memory;
+```cpp
+database.clear();
+```
 ## Operations
 ### Create
 ```
@@ -34,13 +52,13 @@ table_name: create {column1, column2...} {data_type1....}
 flights: create {plane, passangers, destination, time} {str, int, str, str}
 ```
 ```Cpp
-shared_ptr<CreateTableQuery> q = 
+shared_ptr<CreateTableQuery> createTable = 
 shared_ptr<CreateTableQuery>(new CreateTableQuery("flights"));
-	q->addColumn("plane", STRING);
-	q->addColumn("passangers", INT);
-	q->addColumn("destination", STRING);
-	q->addColumn("time", STRING);
-	shared_ptr<QueryResult> res = database.query(q);
+createTable->addColumn("plane", STRING);
+createTable->addColumn("passangers", INT);
+createTable->addColumn("destination", STRING);
+createTable->addColumn("time", STRING);
+shared_ptr<QueryResult> res = database.query(createTable);
 ```
 plane | passangers | destination | time
 ------------ | ------------- |------------ | -------------
@@ -52,13 +70,13 @@ table_name: insert {column1=value1 column2=value2...}
 flights: insert {plane='Airbus 380', passangers=170, destination='Los Angeles', time='0700'}
 ```
 ```cpp
-shared_ptr<InsertionQuery> insertQuery = 
+shared_ptr<InsertionQuery> creationQuery = 
   shared_ptr<InsertionQuery>(new InsertionQuery("flights"));
-insertQuery->addField("plane", "Airbus 380");
-insertQuery->addField("passangers", "170");
-insertQuery->addField("destination", "Los Angeles");
-insertQuery->addField("time", "0700");
-res = database.query(insertQuery);
+creationQuery->addField("plane", "Airbus 380");
+creationQuery->addField("passangers", "170");
+creationQuery->addField("destination", "Los Angeles");
+creationQuery->addField("time", "0700");
+res = database.query(creationQuery);
 ```
 ```
 flights: insert {plane='Boeing 787', passangers=240, destination='Miami', time='1325'}
@@ -155,4 +173,17 @@ Save table to disk.
 table_name: save
 ```
 ### Errors
-
+If an error is detected, the database will not execute the query and include an error data (error code and a detailed message) in the 'QueryResult' object.
+```
+flights: insert {plane='Airbus 380', passangers=1as5, destination='Los Angeles', time='0700'}
+```
+```cpp
+shared_ptr<QueryResult> result = database.query([Query]);
+if (result->isError())
+	cout << res->getError().getMessage();
+```
+Output:
+```
+"Value '1as5' not compatible with Column's type";
+```
+Error types include incorrect actions, names, columns, incompatibility of values with types and not existed tables.
