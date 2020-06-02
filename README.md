@@ -138,7 +138,7 @@ flights: delete {passangers = 240 | (destination='Dallas' | (time <'0100' & time
 ```
 ```cpp
 std::shared_ptr<DeletionQuery> deletion = 
-	sstd::hared_ptr<DeletionQuery>(new DeletionQuery("flights", conditions));
+	std::hared_ptr<DeletionQuery>(new DeletionQuery("flights", conditions));
 result = database.query(deletion);
 ```
 plane | passangers | destination | time
