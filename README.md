@@ -30,11 +30,11 @@ Include database library:
 #include "dblib.h"
 using namespace database;
 ```
-Insert databsae file path:
+Insert databsae file's path:
 ```cpp
 Database database([path]);
 ```
-If file path isn't provided databse would be volatile.
+When file's path isn't provided the databse would be volatile.
 
 In case file exists, load databse into main memory:
 ```cpp
