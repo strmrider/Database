@@ -186,7 +186,7 @@ flights: insert {plane='Airbus 380', passangers=1as5, destination='Los Angeles',
 ```cpp
 std::shared_ptr<QueryResult> result = database.query([Query]);
 if (result->isError())
-	cout << res->getError().getMessage();
+	cout << result->getError().getMessage();
 ```
 Output:
 ```
